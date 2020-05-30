@@ -17,5 +17,16 @@ Route::post('login', 'Auth\LoginController@login');
 
 Route::get('region/list', 'RegionController@list');
 Route::post('event/list', 'Event\EventListController@index');
-Route::get('/event/view/{eventDetail}', 'Event\EventDetailController@index')->where('eventDetail', '\d+');
-Route::get('/event/view/{eventDetail}/stat', 'Event\EventDetailController@statistic')->where('eventDetail', '\d+');
+Route::get('/event/view/{eventDetail}', 'Event\EventDetailController@index')
+    ->where('eventDetail', '\d+');
+Route::get('/event/view/{eventDetail}/stat', 'Event\EventDetailController@statistic')
+    ->where('eventDetail', '\d+');
+
+Route::post('/donation/create', 'Donation\DonationCreateController@create');
+Route::post('/donation/:donation/payment', 'Donation\DonationCreateController@create')
+    ->name('donation.payment')
+    ->where('donation', '\d+');
+
+// Check transaction
+Route::any('/donation/:source/check', 'Donation\DonationPayPalHandlerController@check')->name('donation.handler');
+Route::any('/donation/:source/failed', 'Donation\DonationHandlerController@failed')->name('donation.handler.failed');

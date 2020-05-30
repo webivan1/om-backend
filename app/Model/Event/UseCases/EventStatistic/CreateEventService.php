@@ -4,7 +4,7 @@ namespace App\Model\Event\UseCases\EventStatistic;
 
 use App\Model\Event\Entities\Event\Event;
 use App\Model\Event\Entities\EventStatistic\EventStatistic;
-use App\Model\Event\Repositories\EventRepository;
+use App\Model\Event\Repositories\DonationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 
@@ -12,7 +12,7 @@ class CreateEventService
 {
     private EntityManagerInterface $em;
 
-    /** @var EventRepository|ObjectRepository */
+    /** @var DonationRepository|ObjectRepository */
     private ObjectRepository $repo;
 
     public function __construct(EntityManagerInterface $em)

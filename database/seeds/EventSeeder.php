@@ -19,11 +19,6 @@ class EventSeeder extends Seeder
         $this->generate();
     }
 
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
         $collection = FactorySeeder::new()->factory(Event::class, 50);

@@ -7,6 +7,7 @@ use App\Model\Region\Entities\Region\Values\Distance;
 use App\Model\Region\Entities\Region\Values\Label;
 use App\Model\Region\Entities\Region\Values\LatLng;
 use App\Model\Region\Entities\Region\Values\Slug;
+use App\Model\Region\Entities\Region\Values\Timezone;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -125,16 +126,15 @@ class Region implements Arrayable
         Label $label,
         Slug $slug,
         LatLng $latLng,
-        Distance $distance
+        Distance $distance,
+        Timezone $timezone
     ): self
     {
-        $c = new \DateTime();
-        $c->setTimezone(new \DateTimeZone());
-
         $model = new self;
         $model->setLabel($label->getValue());
         $model->setSlug($slug->getValue());
         $model->setDistance($distance->getValue());
+        $model->setTimezone($timezone->getValue());
 
         [$lat, $lng] = $latLng->getValue();
 

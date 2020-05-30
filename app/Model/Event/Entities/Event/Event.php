@@ -10,7 +10,7 @@ use App\Model\User\Entities\User\User;
 
 /**
  * @ORM\Entity(
- *     repositoryClass="App\Model\Event\Repositories\EventRepository"
+ *     repositoryClass="DonationRepository"
  * )
  * @ORM\Table(
  *     indexes={

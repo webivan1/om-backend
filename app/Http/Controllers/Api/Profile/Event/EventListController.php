@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Profile\Event;
 
 use App\Model\Event\Entities\Event\Event;
-use App\Model\Event\Repositories\EventRepository;
+use App\Model\Event\Repositories\DonationRepository;
 use Illuminate\Http\Request;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 
@@ -11,7 +11,7 @@ class EventListController
 {
     public function index(Request $request)
     {
-        /** @var EventRepository $repo */
+        /** @var DonationRepository $repo */
         $repo = EntityManager::getRepository(Event::class);
 
         $perPage = 10;
