@@ -3,6 +3,7 @@
 namespace App\Model\Event\Entities\Event\Values;
 
 use App\Model\Common\Contracts\ValueContract;
+use Illuminate\Support\Facades\Log;
 use Webmozart\Assert\Assert;
 
 class EventDate implements ValueContract
@@ -25,6 +26,7 @@ class EventDate implements ValueContract
         }
 
         $clientStartEvent = new \DateTime($startAt, new \DateTimeZone($timeZone));
+
         $this->startAt = $clientStartEvent->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         $this->finishAt = (clone $clientStartEvent)->modify($interval);
     }
@@ -34,6 +36,6 @@ class EventDate implements ValueContract
      */
     public function getValue(): array
     {
-        return [$this->startAt, $this->finishAt];
+        return [clone $this->startAt, clone $this->finishAt];
     }
 }
