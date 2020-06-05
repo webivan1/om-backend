@@ -3,7 +3,7 @@
 namespace App\Console\Commands\Events;
 
 use App\Model\Event\Entities\Event\Event;
-use App\Model\Event\Repositories\DonationRepository;
+use App\Model\Event\Repositories\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Illuminate\Console\Command;
 
@@ -14,7 +14,7 @@ class UpdateDateEventCommand extends Command
 
     public function handle(EntityManagerInterface $em)
     {
-        /** @var DonationRepository|\Doctrine\Persistence\ObjectRepository $repo */
+        /** @var EventRepository|\Doctrine\Persistence\ObjectRepository $repo */
 
         $repo = $em->getRepository(Event::class);
 

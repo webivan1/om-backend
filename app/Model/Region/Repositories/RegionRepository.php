@@ -13,4 +13,16 @@ class RegionRepository extends \Doctrine\ORM\EntityRepository
             $this->findAll()
         );
     }
+
+    public function getOne(int $id): Region
+    {
+        /** @var Region|null $model */
+        $model = $this->find($id);
+
+        if (empty($model)) {
+            throw new \DomainException('This region is not found');
+        }
+
+        return $model;
+    }
 }

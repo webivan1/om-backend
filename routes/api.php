@@ -8,8 +8,17 @@ Route::group([
 ], function () {
     Route::get('user', fn(Request $request) => $request->user()->toArray());
 
-    // Profile events
-    Route::post('/profile/event/list', 'Profile\Event\EventListController@index');
+    Route::group([
+       'middleware' => ['has.roles:admin|moderator|organizer']
+    ], function () {
+        // Profile events
+        Route::post('/profile/event/list', 'Profile\Event\EventListController@index');
+        Route::post('/profile/event/create', 'Profile\Event\EventCreateController@index');
+        Route::get('/profile/event/edit/{event}', 'Profile\Event\EventUpdateController@detail')
+            ->where('eventDetail', '\d+');
+        Route::post('/profile/event/edit/{event}', 'Profile\Event\EventUpdateController@update')
+            ->where('eventDetail', '\d+');
+    });
 });
 
 // Auth
@@ -28,5 +37,7 @@ Route::post('/donation/:donation/payment', 'Donation\DonationCreateController@cr
     ->where('donation', '\d+');
 
 // Check transaction
-Route::any('/donation/:source/check', 'Donation\DonationPayPalHandlerController@check')->name('donation.handler');
-Route::any('/donation/:source/failed', 'Donation\DonationHandlerController@failed')->name('donation.handler.failed');
+Route::any('/donation/:source/check', 'Donation\DonationPayPalHandlerController@check')
+    ->name('donation.handler');
+Route::any('/donation/:source/failed', 'Donation\DonationHandlerController@failed')
+    ->name('donation.handler.failed');

@@ -24,6 +24,16 @@ class RouteBindingServiceProvider extends ServiceProvider
             }
         });
 
+        Route::bind('event', function ($value) {
+            try {
+                /** @var EventRepository $repo */
+                $repo = EntityManager::getRepository(Event::class);
+                return $repo->getById((int) $value);
+            } catch (\DomainException $e) {
+                abort(404, $e->getMessage());
+            }
+        });
+
         Route::bind('donation', function ($value) {
             try {
                 /** @var DonationRepository $repo */

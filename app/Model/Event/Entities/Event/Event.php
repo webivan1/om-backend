@@ -3,6 +3,10 @@
 namespace App\Model\Event\Entities\Event;
 
 use App\Model\Common\Services\DateIntervalService;
+use App\Model\Event\Entities\Event\Values\Description;
+use App\Model\Event\Entities\Event\Values\EventDate;
+use App\Model\Event\Entities\Event\Values\Status;
+use App\Model\Event\Entities\Event\Values\Title;
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Common\Contracts\Arrayable;
 use App\Model\Region\Entities\Region\Region;
@@ -10,7 +14,7 @@ use App\Model\User\Entities\User\User;
 
 /**
  * @ORM\Entity(
- *     repositoryClass="DonationRepository"
+ *     repositoryClass="App\Model\Event\Repositories\EventRepository"
  * )
  * @ORM\Table(
  *     indexes={
@@ -84,6 +88,36 @@ class Event implements Arrayable
      * @ORM\Column(type="string", length=16)
      */
     protected string $status;
+
+    public function isDraft(): bool
+    {
+        return $this->status === self::STATUS_DRAFT;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function isModeration(): bool
+    {
+        return $this->status === self::STATUS_MODERATION;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === self::STATUS_REJECT;
+    }
+
+    public function toApprove()
+    {
+        $this->setStatus(self::STATUS_APPROVED);
+    }
+
+    public function toReject()
+    {
+        $this->setStatus(self::STATUS_REJECT);
+    }
 
     public function getId(): int
     {
@@ -188,6 +222,42 @@ class Event implements Arrayable
     public function isFinishedEvent(): bool
     {
         return $this->finishAt < new \DateTime();
+    }
+
+    public static function create(User $user, Region $region, Title $title, Description $description, EventDate $date): self
+    {
+        $model = new self;
+        $model->setUser($user);
+        $model->setRegion($region);
+        $model->setTitle($title->getValue());
+        $model->setDescription($description->getValue());
+        $model->setCreatedAt(new \DateTime());
+        $model->setUpdatedAt(new \DateTime());
+
+        [$startAt, $finishAt] = $date->getValue();
+
+        $model->setStartAt($startAt);
+        $model->setFinishAt($finishAt);
+        $model->setStatus(self::STATUS_MODERATION);
+
+        return $model;
+    }
+
+    public function update(Title $title, Description $description, EventDate $date): void
+    {
+        $this->setTitle($title->getValue());
+        $this->setDescription($description->getValue());
+
+        [, $finishAt] = $date->getValue();
+
+        $this->setFinishAt($finishAt);
+        $this->setStatus(self::STATUS_MODERATION);
+    }
+
+    public static function changeStatus(Event $event, Status $status): self
+    {
+        $event->setStatus($status->getValue());
+        return $event;
     }
 
     public function toArray(): array
