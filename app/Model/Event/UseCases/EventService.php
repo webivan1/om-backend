@@ -31,7 +31,7 @@ class EventService
         throw new \DomainException('Unknown status');
     }
 
-    public function canDelete(Event $event)
+    public function canDelete(Event $event): bool
     {
         return $this->canEditable($event);
     }

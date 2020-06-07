@@ -15,9 +15,11 @@ Route::group([
         Route::post('/profile/event/list', 'Profile\Event\EventListController@index');
         Route::post('/profile/event/create', 'Profile\Event\EventCreateController@index');
         Route::get('/profile/event/edit/{event}', 'Profile\Event\EventUpdateController@detail')
-            ->where('eventDetail', '\d+');
+            ->where('event', '\d+');
         Route::post('/profile/event/edit/{event}', 'Profile\Event\EventUpdateController@update')
-            ->where('eventDetail', '\d+');
+            ->where('event', '\d+');
+        Route::delete('/profile/event/remove/{event}', 'Profile\Event\EventRemoveController@index')
+            ->where('event', '\d+');
     });
 });
 
