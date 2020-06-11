@@ -11,7 +11,7 @@ class MessageText implements ValueContract
 
     public function __construct(string $value)
     {
-        $this->value = clean($value);
+        $this->value = trim(nl2br(strip_tags($value)));
 
         Assert::notEmpty($this->value);
     }

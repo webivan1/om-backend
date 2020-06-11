@@ -21,11 +21,16 @@ class DonationCreateController
         try {
             $model = $service->create($dto);
 
-            return route('donation.payment', [
-                'donation' => $model->getId()
-            ]);
+            return [
+                'status' => 'success',
+                'donationId' => $model->getId(),
+                'redirectUrl' => route('donation.payment', $model->getId())
+            ];
         } catch (\Exception $e) {
-            abort(404, $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
         }
     }
 }

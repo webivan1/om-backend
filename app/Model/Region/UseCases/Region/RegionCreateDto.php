@@ -9,4 +9,5 @@ class RegionCreateDto
     public float $lat;
     public float $lng;
     public int $distance;
+    public string $timezone;
 }

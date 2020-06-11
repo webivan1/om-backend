@@ -17,7 +17,7 @@ class DonationCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'eventId' => 'exists:events,id|nullable',
+            'eventId' => 'integer|nullable',
             'amount' => 'required|numeric|min:' . Donation::MIN_PRICE,
             'username' => 'required|string|min:2|max:50',
             'email' => 'email|nullable',

@@ -7,11 +7,15 @@ use App\Model\User\Repositories\UserRepository;
 use App\Model\User\Services\PasswordHash;
 use App\Model\User\UseCases\User\UserService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectRepository;
 
 class LoginService
 {
     private EntityManagerInterface $em;
-    private UserRepository $repo;
+
+    /** @var ObjectRepository|UserRepository */
+    private ObjectRepository $repo;
+
     private UserService $userService;
 
     public function __construct(EntityManagerInterface $em, UserService $userService)

@@ -18,6 +18,7 @@ use App\Model\Donation\Entities\Donation\Values\Username;
 use App\Model\Donation\Repositories\DonationRepository;
 use App\Model\Event\Entities\Event\Event;
 use App\Model\Event\Repositories\EventRepository;
+use App\Model\Message\UseCases\Message\MessageService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 
@@ -31,13 +32,16 @@ class DonationService
     /** @var ObjectRepository|DonationRepository */
     private ObjectRepository $repoDonate;
 
-    private ?string $responseText;
+    private ?string $responseText = null;
 
-    public function __construct(EntityManagerInterface $em)
+    private MessageService $messageService;
+
+    public function __construct(EntityManagerInterface $em, MessageService $messageService)
     {
         $this->em = $em;
         $this->repoEvent = $this->em->getRepository(Event::class);
         $this->repoDonate = $this->em->getRepository(Donation::class);
+        $this->messageService = $messageService;
     }
 
     public function create(DonationCreateDto $dto): Donation
@@ -76,16 +80,18 @@ class DonationService
         return $service->createTransaction($config, $successUrl, $failUrl);
     }
 
-    public function check(string $source, array $request): Donation
+    public function check(Donation $donation, array $request): void
     {
-        $service = new PaymentService(new PaymentDriver($source));
-
-        $donation = $this->repoDonate->getOne(
-            $service->getTransactionId($request)
-        );
+        $service = new PaymentService(new PaymentDriver($donation->getSource()));
 
         if ($donation->isApproved()) {
             throw new \DomainException('This donation has been paid');
+        }
+
+        $id = $service->getTransactionId($request);
+
+        if (!empty($id) && (string) $id !== (string) $donation->getId()) {
+            throw new \DomainException('This transaction failed');
         }
 
         try {
@@ -104,26 +110,31 @@ class DonationService
         } finally {
             $this->save($donation);
 
-            // @todo add events (add message)
+            if ($donation->getEvent() && !empty($donation->getMessage())) {
+                $this->messageService->create(
+                    $donation->getEvent(),
+                    $donation->getMessage(),
+                    null,
+                    $donation
+                );
+            }
         }
-
-        return $donation;
     }
 
-    public function failed(string $source, array $request): Donation
+    public function failed(Donation $donation, array $request): void
     {
-        $service = new PaymentService(new PaymentDriver($source));
+        $service = new PaymentService(new PaymentDriver($donation->getSource()));
 
-        $donation = $this->repoDonate->getOne(
-            $service->getTransactionId($request)
-        );
+        $id = $service->getTransactionId($request);
+
+        if (!empty($id) && (string) $id !== (string) $donation->getId()) {
+            throw new \DomainException('This transaction failed');
+        }
 
         $donation->toReject();
 
         $this->em->persist($donation);
         $this->em->flush();
-
-        return $donation;
     }
 
     private function save(Donation $donation)
@@ -132,7 +143,7 @@ class DonationService
         $this->em->flush();
     }
 
-    public function responseText(): ?string
+    public function getResponseText(): ?string
     {
         return $this->responseText;
     }

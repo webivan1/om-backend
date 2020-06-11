@@ -13,7 +13,7 @@ class Amount implements ValueContract
     public function __construct(float $value)
     {
         Assert::numeric($value);
-        Assert::greaterThan($value, Donation::MIN_PRICE);
+        Assert::greaterThan($value, Donation::MIN_PRICE - 1);
         $this->value = round($value, 2);
     }
 

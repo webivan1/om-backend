@@ -59,7 +59,7 @@ class Paypal implements DriverContract
 
         $amount = new Amount();
         $amount->setCurrency(env('PAYPAL_CURRENCY'));
-        $amount->setTotal($amount);
+        $amount->setTotal($config->getAmount());
 
         $transaction = new Transaction();
         $transaction->setItemList($itemList);
@@ -121,11 +121,9 @@ class Paypal implements DriverContract
 
     private function validate(array $params): void
     {
-        $id = $this->getItemNumber($params);
         $paymentId = $params['paymentId'] ?? '';
         $payerId = $params['PayerID'] ?? '';
 
-        Assert::notEmpty($id);
         Assert::notEmpty($paymentId);
         Assert::notEmpty($payerId);
     }

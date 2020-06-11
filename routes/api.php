@@ -20,6 +20,9 @@ Route::group([
             ->where('event', '\d+');
         Route::delete('/profile/event/remove/{event}', 'Profile\Event\EventRemoveController@index')
             ->where('event', '\d+');
+
+        Route::put('/chat/message/{eventDetail}/create', 'Chat\MessagesController@create')
+            ->where('eventDetail', '\d+');
     });
 });
 
@@ -33,13 +36,16 @@ Route::get('/event/view/{eventDetail}', 'Event\EventDetailController@index')
 Route::get('/event/view/{eventDetail}/stat', 'Event\EventDetailController@statistic')
     ->where('eventDetail', '\d+');
 
+Route::get('/chat/messages/{eventDetail}', 'Chat\MessagesController@list')
+    ->where('eventDetail', '\d+');
+
 Route::post('/donation/create', 'Donation\DonationCreateController@create');
-Route::post('/donation/:donation/payment', 'Donation\DonationCreateController@create')
+Route::get('/donation/{donation}/payment', 'Donation\DonationPaymentController@url')
     ->name('donation.payment')
     ->where('donation', '\d+');
 
 // Check transaction
-Route::any('/donation/:source/check', 'Donation\DonationPayPalHandlerController@check')
+Route::any('/donation/{donation}/check', 'Donation\DonationHandlerController@check')
     ->name('donation.handler');
-Route::any('/donation/:source/failed', 'Donation\DonationHandlerController@failed')
+Route::any('/donation/{donation}/failed', 'Donation\DonationHandlerController@failed')
     ->name('donation.handler.failed');

@@ -57,8 +57,6 @@ class Tinkoff implements DriverContract
 
     private function validate(array $params): void
     {
-        $id = $this->getItemNumber($params);
-        Assert::notEmpty($id);
         Assert::notEmpty($params['Status']);
     }
 

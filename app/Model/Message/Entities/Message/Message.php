@@ -2,6 +2,7 @@
 
 namespace App\Model\Message\Entities\Message;
 
+use App\Model\Common\Contracts\Arrayable;
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Donation\Entities\Donation\Donation;
 use App\Model\Event\Entities\Event\Event;
@@ -18,7 +19,7 @@ use App\Model\User\Entities\User\User;
  *     }
  * )
  */
-class Message
+class Message implements Arrayable
 {
     /**
      * @ORM\Id
@@ -36,20 +37,20 @@ class Message
 
     /**
      * @ORM\ManyToOne(
-     *     targetEntity="App\Model\Event\Entities\Event\Event"
+     *     targetEntity="App\Model\User\Entities\User\User"
      * )
      */
-    protected ?User $user;
+    protected ?User $user = null;
 
     /**
      * @ORM\ManyToOne(
      *     targetEntity="App\Model\Donation\Entities\Donation\Donation"
      * )
      */
-    protected ?Donation $donation;
+    protected ?Donation $donation = null;
 
     /**
-     * @ORM\Column(type="string", length="255")
+     * @ORM\Column(type="string", length=255)
      */
     protected string $message;
 
@@ -145,5 +146,24 @@ class Message
         $model->setCreatedAt(new \DateTimeImmutable());
 
         return $model;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'message' => $this->message,
+            'organizer' => $this->organizer,
+            'event' => $this->event->toArray(),
+            'user' => $this->user ? [
+                'id' => $this->user->getId(),
+                'name' => $this->user->getName(),
+            ] : null,
+            'donation' => $this->donation ? [
+                'name' => $this->donation->getUsername(),
+            ] : null,
+            'createdAt' => $this->createdAt
+                ->setTimezone(new \DateTimeZone($this->event->getRegion()->getTimezone()))
+                ->getTimestamp() * 1000
+        ];
     }
 }

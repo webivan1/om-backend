@@ -19,8 +19,7 @@ use App\Model\Event\Entities\Event\Event;
  *     indexes={
  *         @ORM\Index(name="created_at_idx", columns={"created_at"}),
  *         @ORM\Index(name="status_idx", columns={"status"}),
- *         @ORM\Index(name="source_idx", columns={"source"}),
- *         @ORM\Index(name="value_idx", columns={"value"}),
+ *         @ORM\Index(name="source_idx", columns={"source"})
  *     }
  * )
  */
@@ -48,14 +47,14 @@ class Donation implements Arrayable
     protected string $username;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100, nullable=true)
      */
-    protected ?string $email;
+    protected ?string $email = null;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    protected ?string $message;
+    protected ?string $message = null;
 
     /**
      * @ORM\Column(type="decimal", precision=10, scale=2)

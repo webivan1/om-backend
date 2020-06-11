@@ -8,6 +8,7 @@ use App\Model\Region\Entities\Region\Values\Distance;
 use App\Model\Region\Entities\Region\Values\Label;
 use App\Model\Region\Entities\Region\Values\LatLng;
 use App\Model\Region\Entities\Region\Values\Slug;
+use App\Model\Region\Entities\Region\Values\Timezone;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 
@@ -36,7 +37,8 @@ class RegionService
             new Label($dto->label),
             new Slug($slug),
             new LatLng($dto->lat, $dto->lng),
-            new Distance($dto->distance)
+            new Distance($dto->distance),
+            new Timezone($dto->timezone)
         );
 
         $this->em->persist($region);

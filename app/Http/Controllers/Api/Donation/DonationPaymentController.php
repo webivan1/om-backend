@@ -12,8 +12,12 @@ class DonationPaymentController
         try {
             $redirectUrl = $service->getPayUrl(
                 $donation,
-                route('donation.handler'),
-                route('donation.handler.failed')
+                route('donation.handler', [
+                    'donation' => $donation->getId()
+                ]),
+                route('donation.handler.failed', [
+                    'donation' => $donation->getId()
+                ])
             );
 
             return redirect()->to($redirectUrl);

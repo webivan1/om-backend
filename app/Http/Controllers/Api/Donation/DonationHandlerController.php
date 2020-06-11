@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers\Api\Donation;
 
+use App\Events\Donation\DonationApprovedBroadcast;
+use App\Events\Donation\DonationFailedBroadcast;
+use App\Events\Donation\DonationWaitBroadcast;
+use App\Model\Donation\Entities\Donation\Donation;
 use App\Model\Donation\UseCases\Donation\DonationService;
 use Illuminate\Http\Request;
 
@@ -14,33 +18,37 @@ class DonationHandlerController
         $this->service = $service;
     }
 
-    public function check(string $source, Request $request)
+    public function check(Donation $donation, Request $request)
     {
         try {
-            $model = $this->service->check($source, $request->all());
+            $this->service->check($donation, $request->all());
 
-            if ($response = $this->service->responseText()) {
+            if ($response = $this->service->getResponseText()) {
                 return response($response);
             }
 
-            if ($model->isRejected()) {
-                return view('donation.handler.failed', compact('model'));
-            } else if ($model->isApproved()) {
-                return view('donation.handler.success', compact('model'));
+            if ($donation->isRejected()) {
+                broadcast(new DonationFailedBroadcast($donation));
+            } else if ($donation->isApproved()) {
+                broadcast(new DonationApprovedBroadcast($donation));
             } else {
-                return view('donation.handler.wait', compact('model'));
+                broadcast(new DonationWaitBroadcast($donation));
             }
+
+            return view('donation.handler.closed');
         } catch (\DomainException $e) {
             abort(404, $e->getMessage());
         }
     }
 
-    public function failed(string $source, Request $request)
+    public function failed(Donation $donation, Request $request)
     {
         try {
-            $model = $this->service->failed($source, $request->all());
+            $this->service->failed($donation, $request->all());
 
-            return view('donation.handler.failed', compact('model'));
+            broadcast(new DonationFailedBroadcast($donation));
+
+            return view('donation.handler.closed');
         } catch (\DomainException $e) {
             abort(404, $e->getMessage());
         }
